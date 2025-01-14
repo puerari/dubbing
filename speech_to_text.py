@@ -1,11 +1,14 @@
 from transformers import WhisperProcessor, WhisperForConditionalGeneration
 import librosa
+import torch
 
 def extract_speech(audio_path, text_path):
+    device = "cuda:0" if torch.cuda.is_available() else "cpu"
+    torch.cuda.init()
+
     # Carregue o modelo e o processador
     processor = WhisperProcessor.from_pretrained("openai/whisper-large-v2")
-    model = WhisperForConditionalGeneration.from_pretrained("openai/whisper-large-v2")
-    #model.cuda()
+    model = WhisperForConditionalGeneration.from_pretrained("openai/whisper-large-v2").to(device)
 
     # Configure o decoder para traduzir do inglês para o português brasileiro
     forced_decoder_ids = processor.get_decoder_prompt_ids(language="portuguese", task="translate", no_timestamps=False)
